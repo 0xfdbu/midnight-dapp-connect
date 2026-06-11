@@ -1,4 +1,4 @@
-📁 **Full Source Code:** [midnight-apps/dapp-connect](https://github.com/0xfdbu/midnight-dapp-connect)
+📁 **Full Source Code:** [midnight-dapp-connect](https://github.com/0xfdbu/midnight-dapp-connect)
 
 This guide walks through the complete lifecycle of connecting web apps to the Midnight blockchain. You learn how to detect injected wallets in the browser, make a connection, monitor state changes, and submit transactions through both the browser extension flow and the CLI. You also learn the difference between them.
 
