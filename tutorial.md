@@ -1,4 +1,4 @@
-📁 **Full Source Code:** [midnight-apps/dapp-connect](https://github.com/0xfdbu/midnight-apps/tree/main/dapp-connect)
+📁 **Full Source Code:** [midnight-apps/dapp-connect](https://github.com/0xfdbu/midnight-dapp-connect)
 
 This guide walks through the complete lifecycle of connecting web apps to the Midnight blockchain. You learn how to detect injected wallets in the browser, make a connection, monitor state changes, and submit transactions through both the browser extension flow and the CLI. You also learn the difference between them.
 
@@ -11,7 +11,7 @@ This guide walks through the complete lifecycle of connecting web apps to the Mi
 - Node.js installed (v20+)
 - A Midnight wallet (for example, 1AM or Lace)
 - Some Preprod [faucet](https://faucet.preprod.midnight.network/) NIGHT tokens
-- A [`package.json`](https://github.com/0xfdbu/midnight-apps/blob/main/dapp-connect/package.json) with the needed packages:
+- A [`package.json`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/package.json) with the needed packages:
   - `@midnight-ntwrk/dapp-connector-api`
   - `@midnight-ntwrk/ledger-v8`
   - `@midnight-ntwrk/midnight-js-utils`
@@ -53,7 +53,7 @@ Midnight wallets inject a global `window.midnight` object before page load.
 
 **Note:** `COMPATIBLE_CONNECTOR_API_VERSION` is `'4.x'`, not `'^4.0.0'`. The `'4.x'` semver range accepts any `4.x.y` version the wallet reports.
 
-View the full [`wallet.constants.ts`](https://github.com/0xfdbu/midnight-apps/blob/main/dapp-connect/src/hooks/wallet.constants.ts) and [`useWallet.ts`](https://github.com/0xfdbu/midnight-apps/blob/main/dapp-connect/src/hooks/useWallet.ts) files on GitHub.
+View the full [`wallet.constants.ts`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/src/hooks/wallet.constants.ts) and [`useWallet.ts`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/src/hooks/useWallet.ts) files on GitHub.
 
 ```typescript
 // src/hooks/wallet.constants.ts
@@ -82,7 +82,7 @@ export function getCompatibleWallets(): InitialAPI[] {
 
 When one or more wallets are installed, a modal is shown so the user can pick.
 
-View the full [`WalletSelectModal.tsx`](https://github.com/0xfdbu/midnight-apps/blob/main/dapp-connect/src/components/WalletSelectModal.tsx) file on GitHub.
+View the full [`WalletSelectModal.tsx`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/src/components/WalletSelectModal.tsx) file on GitHub.
 
 ```tsx
 // src/components/WalletSelectModal.tsx
@@ -130,7 +130,7 @@ Installed wallets are discovered using `InitialAPI[]`. Each object is injected b
 
 `ConnectButton` ties detection, selection, and connection together. If a single wallet is detected, it directly prompts for wallet connection approval. If multiple wallets are detected, a modal is shown.
 
-View the full [`ConnectButton.tsx`](https://github.com/0xfdbu/midnight-apps/blob/main/dapp-connect/src/components/ConnectButton.tsx) file on GitHub.
+View the full [`ConnectButton.tsx`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/src/components/ConnectButton.tsx) file on GitHub.
 
 ```tsx
 // src/components/ConnectButton.tsx
@@ -178,7 +178,7 @@ export function ConnectButton() {
 
 When `wallet.connect(networkId)` is called, it triggers the wallet extension connection flow.
 
-View the full [`useWallet.ts`](https://github.com/0xfdbu/midnight-apps/blob/main/dapp-connect/src/hooks/useWallet.ts) file on GitHub.
+View the full [`useWallet.ts`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/src/hooks/useWallet.ts) file on GitHub.
 
 ```typescript
 // src/hooks/useWallet.ts
@@ -261,7 +261,7 @@ export async function tryAutoConnect(): Promise<void> {
 
 Clicking the connected button opens a popup showing balances, addresses, copy buttons, refresh, and disconnect.
 
-View the full [`AccountModal.tsx`](https://github.com/0xfdbu/midnight-apps/blob/main/dapp-connect/src/components/AccountModal.tsx) file on GitHub.
+View the full [`AccountModal.tsx`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/src/components/AccountModal.tsx) file on GitHub.
 
 ```tsx
 // src/components/AccountModal.tsx
@@ -295,7 +295,7 @@ export function AccountModal() {
 
 The DApp Connector v4 API does not expose a native push/subscription API. Reactive updates are built on top of polling.
 
-View the full [`useWalletSubscription.ts`](https://github.com/0xfdbu/midnight-apps/blob/main/dapp-connect/src/hooks/useWalletSubscription.ts) file on GitHub.
+View the full [`useWalletSubscription.ts`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/src/hooks/useWalletSubscription.ts) file on GitHub.
 
 `useWalletSubscription` hook calls `loadWalletState()` every 15 seconds
 
@@ -370,7 +370,7 @@ loadWalletState: async () => {
 
 Using the Wallet SDK, you get true push-based state through RxJS.
 
-Build a small helper function. View the full [`transaction-cli.ts`](https://github.com/0xfdbu/midnight-apps/blob/main/dapp-connect/src/lib/transaction-cli.ts) file on GitHub.
+Build a small helper function. View the full [`transaction-cli.ts`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/src/lib/transaction-cli.ts) file on GitHub.
 
 ```typescript
 // src/lib/transaction-cli.ts
@@ -393,7 +393,7 @@ export async function waitForWalletSync(ctx: CliWalletContext): Promise<any> {
 }
 ```
 
-Build the flow. View [`test-subscription.ts`](https://github.com/0xfdbu/midnight-apps/blob/main/dapp-connect/scripts/test-subscription.ts) for the complete script.
+Build the flow. View [`test-subscription.ts`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/scripts/test-subscription.ts) for the complete script.
 
 ```typescript
 // scripts/test-subscription.ts
@@ -428,7 +428,7 @@ Once connected, the browser DApp requests the wallet to balance and submit the t
 
 The DApp Connector API also exposes `makeTransfer`, a convenience method for simple transfers. This app does not use it because the manual path gives full control over the transaction blueprint and works for both pure transfers and **contract calls**.
 
-Here is the full lifecycle of the transfer page. View the full [`Transfer.tsx`](https://github.com/0xfdbu/midnight-apps/blob/main/dapp-connect/src/pages/Transfer.tsx) file on GitHub.
+Here is the full lifecycle of the transfer page. View the full [`Transfer.tsx`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/src/pages/Transfer.tsx) file on GitHub.
 
 ```tsx
 // src/pages/Transfer.tsx
@@ -515,7 +515,7 @@ The CLI performs transactions without a browser wallet, which is essential for a
 
 Derive secret keys directly from a 24-word BIP-39 mnemonic. Call `hdWallet.hdWallet.clear()` after derivation to clear the seed from memory.
 
-View the full [`transaction-cli.ts`](https://github.com/0xfdbu/midnight-apps/blob/main/dapp-connect/src/lib/transaction-cli.ts) file on GitHub.
+View the full [`transaction-cli.ts`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/src/lib/transaction-cli.ts) file on GitHub.
 
 ```typescript
 // src/lib/transaction-cli.ts
@@ -578,7 +578,7 @@ Required v3 fields:
 
 For CLI transfers, use `transferTransaction` followed by `signRecipe`:
 
-View the full [`test-v3-sync-and-transfer.ts`](https://github.com/0xfdbu/midnight-apps/blob/main/dapp-connect/scripts/test-v3-sync-and-transfer.ts) file on GitHub.
+View the full [`test-v3-sync-and-transfer.ts`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/scripts/test-v3-sync-and-transfer.ts) file on GitHub.
 
 ```typescript
 // scripts/test-v3-sync-and-transfer.ts
@@ -659,7 +659,7 @@ MNEMONIC="word1 word2 ... word24" npx tsx scripts/test-v3-sync-and-transfer.ts
 
 ## Next steps
 
-- Clone the project at [`https://github.com/0xfdbu/midnight-apps/tree/main/dapp-connect`](https://github.com/0xfdbu/midnight-apps/tree/main/dapp-connect)
+- Clone the project at [`https://github.com/0xfdbu/midnight-dapp-connect`](https://github.com/0xfdbu/midnight-dapp-connect)
 - Deploy a compact smart contract and integrate it into the DApp
 - Build an AI agent around the CLI
 
