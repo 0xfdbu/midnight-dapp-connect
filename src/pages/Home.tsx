@@ -92,7 +92,7 @@ export function HomePage() {
           {/* Addresses */}
           <div className="p-5 bg-white/[0.03] border border-white/[0.06] rounded-2xl space-y-3">
             <p className="text-[10px] uppercase tracking-[0.1em] text-white/20 font-medium">Addresses</p>
-            <div className="space-y-2 font-mono text-[12px] text-white/40">
+            <div className="space-y-2 font-mono text-[12px] text-white/40 break-all">
               <p>Shielded: {addresses?.shieldedAddress}</p>
               <p>Unshielded: {addresses?.unshieldedAddress}</p>
               <p>Dust: {addresses?.dustAddress}</p>
