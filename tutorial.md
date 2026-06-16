@@ -39,7 +39,7 @@ Midnight DApps operate in two different security contexts. Understanding the bou
 | **Browser / DApp** | Injected extension | `balanceUnsealedTransaction` | Wallet handles it | UI / DApps |
 | **CLI / backend** | Your script | `transferTransaction` + `signRecipe` | Manual | Agents, automation |
 
-In the **browser flow**, the wallet extension handles the user's private key (typically encrypted on the user's device with a password). All keys are derived internally, and the DApp never sees secret material. The DApp builds a transaction blueprint, serializes it, and hands it to the wallet through the **DApp Connector API**. The wallet selects inputs, adds balancing outputs through `balanceUnsealedTransaction`, creates the signatures, and returns a finalized transaction.
+In the **browser flow**, the wallet extension handles the user's private key (typically encrypted on the user's device with a password). All keys are derived internally, and the DApp never sees secret material. The DApp builds a transaction blueprint, serialises it, and hands it to the wallet through the **DApp Connector API**. The wallet selects inputs, adds balancing outputs through `balanceUnsealedTransaction`, creates the signatures, and returns a finalised transaction.
 
 In the **CLI / backend flow**, your script holds the 24-word mnemonic directly. It derives `ZswapSecretKeys`, `DustSecretKey`, and an `UnshieldedKeystore` from the mnemonic. Because there is no wallet extension to handle balancing and signing, the script uses `transferTransaction` to build a recipe, then `signRecipe` with the unshielded keystore, then `finalizeRecipe` and `submitTransaction`. The script acts as the wallet.
 
@@ -497,13 +497,13 @@ const hexRecipient = unshieldedAddr.data.toString('hex');
 BALANCE_FAILED: invalid network ID - expect 'preprod' found 'undeployed'
 ```
 
-**`tx.prove()`:** `balanceUnsealedTransaction` expects a transaction with the `Proof` marker. Without `prove()`, the transaction serializes with `proof-preimage` (`PreProof` state) and the wallet rejects it with:
+**`tx.prove()`:** `balanceUnsealedTransaction` expects a transaction with the `Proof` marker. Without `prove()`, the transaction serialises with `proof-preimage` (`PreProof` state) and the wallet rejects it with:
 
 ```plaintext
 expected header tag '...proof...', got '...proof-preimage...'
 ```
 
-**Security model:** In the browser flow, **the DApp never sees secret keys**. The wallet extension derives all keys locally and signs intents internally. The DApp only handles public addresses and serialized transaction bytes.
+**Security model:** In the browser flow, **the DApp never sees secret keys**. The wallet extension derives all keys locally and signs intents internally. The DApp only handles public addresses and serialised transaction bytes.
 
 ---
 
