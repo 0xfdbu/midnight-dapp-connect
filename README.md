@@ -1,4 +1,4 @@
-# Dapp Connect
+# DApp Connect
 
 A minimal Midnight Network reference demonstrating browser wallet connection (Lace / 1AM) and CLI transaction flows on Preprod.
 

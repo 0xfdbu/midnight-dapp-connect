@@ -426,7 +426,7 @@ const unsubscribe = subscribeToWalletSdkState(ctx, (state: any) => {
 
 Once connected, the browser DApp requests the wallet to balance and submit the transaction. The app uses **manual construction**: building an `Intent` with an `UnshieldedOffer`, proving it, then calling `balanceUnsealedTransaction`.
 
-The DApp Connector API also exposes `makeTransfer`, a convenience method for simple transfers. This app does not use it because the manual path gives full control over the transaction blueprint and works for both pure transfers and **contract calls**.
+The DApp Connector API also exposes `makeTransfer`, a convenience method for simple transfers. This app does not use it because the manual path gives full control over the transaction blueprint and works for both pure transfers and **smart contract calls**.
 
 Here is the full lifecycle of the transfer page. View the full [`Transfer.tsx`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/src/pages/Transfer.tsx) file on GitHub.
 
@@ -534,9 +534,9 @@ const dustSecretKey = ledger.DustSecretKey.fromSeed(derivationResult.keys[Roles.
 const unshieldedKeystore = createKeystore(derivationResult.keys[Roles.NightExternal], 'preprod');
 ```
 
-### Wallet initialization
+### Wallet initialisation
 
-Initialize a headless `WalletFacade` with three sub-wallets. Wallet SDK v3 requires several config fields that were optional in previous versions.
+Initialise a headless `WalletFacade` with three sub-wallets. Wallet SDK v3 requires several config fields that were optional in previous versions.
 
 ```typescript
 // src/lib/transaction-cli.ts
