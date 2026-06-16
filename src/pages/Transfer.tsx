@@ -170,7 +170,7 @@ export function TransferPage() {
           {addresses?.unshieldedAddress && (
             <button
               onClick={() => setRecipient(addresses.unshieldedAddress!)}
-              className="mt-2 text-[11px] text-white/20 hover:text-white/40 transition-colors"
+              className="mt-2 inline-flex items-center px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] border border-white/[0.12] hover:border-white/[0.18] rounded-lg text-[12px] text-white/80 hover:text-white transition-colors"
             >
               Use my address (self-transfer)
             </button>
