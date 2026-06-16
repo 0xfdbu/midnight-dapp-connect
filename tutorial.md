@@ -501,7 +501,7 @@ const hexRecipient = unshieldedAddr.data.toString('hex');
 BALANCE_FAILED: invalid network ID - expect 'preprod' found 'undeployed'
 ```
 
-**`tx.prove()` and "unsealed":** `balanceUnsealedTransaction` expects a transaction with the `Proof` marker. An *unsealed* transaction is already proven (`tx.prove()`) but has not yet received the final binding signature. The wallet adds that signature while it balances the transaction and pays fees. Without `prove()`, the transaction serialises with `proof-preimage` (`PreProof` state) and the wallet rejects it with:
+**`tx.prove()` and "unsealed":** `balanceUnsealedTransaction` expects a transaction with the `Proof` marker. An *unsealed* transaction is already proven (`tx.prove()`) but has not yet been cryptographically bound. The wallet applies that binding while it balances the transaction and pays fees. Without `prove()`, the transaction serialises with `proof-preimage` (`PreProof` state) and the wallet rejects it with:
 
 ```plaintext
 expected header tag '...proof...', got '...proof-preimage...'

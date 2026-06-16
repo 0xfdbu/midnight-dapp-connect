@@ -136,7 +136,7 @@ The CLI code files in `src/lib/transaction-cli.ts` and `scripts/test-v3-sync-and
 
 **After:**
 
-> **`tx.prove()` and "unsealed":** `balanceUnsealedTransaction` expects a transaction with the `Proof` marker. An *unsealed* transaction is already proven (`tx.prove()`) but has not yet received the final binding signature. The wallet adds that signature while it balances the transaction and pays fees. Without `prove()`, the transaction serialises with `proof-preimage` (`PreProof` state) and the wallet rejects it with: ...
+> **`tx.prove()` and "unsealed":** `balanceUnsealedTransaction` expects a transaction with the `Proof` marker. An *unsealed* transaction is already proven (`tx.prove()`) but has not yet been cryptographically bound. The wallet applies that binding while it balances the transaction and pays fees. Without `prove()`, the transaction serialises with `proof-preimage` (`PreProof` state) and the wallet rejects it with: ...
 
 > **Transaction identifier display:** `result.tx` is the serialised balanced transaction, not its hash. The code displays `result.tx.slice(0, 64)` — the first 64 hex characters of that serialised transaction — as a concise success indicator. If you need the real transaction hash, compute it from the submitted transaction bytes.
 
