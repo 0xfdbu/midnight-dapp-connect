@@ -428,7 +428,7 @@ Once connected, the browser DApp requests the wallet to balance and submit the t
 
 The DApp Connector API also exposes `makeTransfer`, a convenience method for simple transfers. This app does not use it because the manual path gives full control over the transaction blueprint and works for both pure transfers and **smart contract calls**.
 
-Here is the full lifecycle of the transfer page. View the full [`Transfer.tsx`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/src/pages/Transfer.tsx) file on GitHub.
+Here is the full lifecycle of the transfer page. The recipient field starts empty; a **Use my address (self-transfer)** button prefills it with the connected wallet's unshielded address so you can safely test with a self-send. View the full [`Transfer.tsx`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/src/pages/Transfer.tsx) file on GitHub.
 
 ```tsx
 // src/pages/Transfer.tsx
@@ -454,9 +454,9 @@ const handleTransfer = useCallback(async () => {
     );
 
     const intent = Intent.new(new Date(Date.now() + 30 * 60 * 1000));
-    (intent as any).fallibleUnshieldedOffer = unshieldedOffer;
+    intent.guaranteedUnshieldedOffer = unshieldedOffer;
 
-    const unsealedTx = Transaction.fromParts('preprod', undefined, undefined, intent as any);
+    const unsealedTx = Transaction.fromParts('preprod', undefined, undefined, intent);
 
     // 3. Prove the transaction (PreProof → Proof)
     const zkConfigProvider = new FetchZkConfigProvider(window.location.origin);
@@ -481,6 +481,8 @@ const handleTransfer = useCallback(async () => {
 
 ### Why each step matters
 
+**`guaranteedUnshieldedOffer`:** A plain unshielded transfer belongs in the *guaranteed* segment of the intent (segment 0). The `fallibleUnshieldedOffer` segment is for offers that may fail alongside a guaranteed section. Using `guaranteedUnshieldedOffer` matches the reference implementations and removes the need for an `as any` cast.
+
 **Bech32 → hex:** The DApp Connector returns addresses in Bech32 (`mn_addr_preprod1...`), but `UnshieldedOffer.new` expects raw hex bytes for the `owner` field.
 
 The correct flow is:
@@ -497,11 +499,13 @@ const hexRecipient = unshieldedAddr.data.toString('hex');
 BALANCE_FAILED: invalid network ID - expect 'preprod' found 'undeployed'
 ```
 
-**`tx.prove()`:** `balanceUnsealedTransaction` expects a transaction with the `Proof` marker. Without `prove()`, the transaction serialises with `proof-preimage` (`PreProof` state) and the wallet rejects it with:
+**`tx.prove()` and "unsealed":** `balanceUnsealedTransaction` expects a transaction with the `Proof` marker. An *unsealed* transaction is already proven (`tx.prove()`) but has not yet received the final binding signature. The wallet adds that signature while it balances the transaction and pays fees. Without `prove()`, the transaction serialises with `proof-preimage` (`PreProof` state) and the wallet rejects it with:
 
 ```plaintext
 expected header tag '...proof...', got '...proof-preimage...'
 ```
+
+**Transaction identifier display:** `result.tx` is the serialised balanced transaction, not its hash. The code displays `result.tx.slice(0, 64)` — the first 64 hex characters of that serialised transaction — as a concise success indicator. If you need the real transaction hash, compute it from the submitted transaction bytes.
 
 **Security model:** In the browser flow, **the DApp never sees secret keys**. The wallet extension derives all keys locally and signs intents internally. The DApp only handles public addresses and serialised transaction bytes.
 
@@ -509,76 +513,7 @@ expected header tag '...proof...', got '...proof-preimage...'
 
 ## The CLI transaction flow
 
-The CLI performs transactions without a browser wallet, which is essential for agents and other systems to act autonomously.
-
-### Key derivation
-
-Derive secret keys directly from a 24-word BIP-39 mnemonic. Call `hdWallet.hdWallet.clear()` after derivation to clear the seed from memory.
-
-View the full [`transaction-cli.ts`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/src/lib/transaction-cli.ts) file on GitHub.
-
-```typescript
-// src/lib/transaction-cli.ts
-const seed = Buffer.from(await bip39.mnemonicToSeed(mnemonic));
-const hdWallet = HDWallet.fromSeed(seed);
-
-const derivationResult = hdWallet.hdWallet
-  .selectAccount(0)
-  .selectRoles([Roles.Zswap, Roles.NightExternal, Roles.Dust])
-  .deriveKeysAt(0);
-
-hdWallet.hdWallet.clear(); // Security: wipe seed from memory
-
-const shieldedSecretKeys = ledger.ZswapSecretKeys.fromSeed(derivationResult.keys[Roles.Zswap]);
-const dustSecretKey = ledger.DustSecretKey.fromSeed(derivationResult.keys[Roles.Dust]);
-const unshieldedKeystore = createKeystore(derivationResult.keys[Roles.NightExternal], 'preprod');
-```
-
-### Wallet initialisation
-
-Initialise a headless `WalletFacade` with three sub-wallets. Wallet SDK v3 requires several config fields that were optional in previous versions.
-
-```typescript
-// src/lib/transaction-cli.ts
-const baseConfig: any = {
-  networkId: 'preprod',
-  indexerClientConnection: {
-    indexerHttpUrl: 'https://indexer.preprod.midnight.network/api/v4/graphql',
-    indexerWsUrl: 'wss://indexer.preprod.midnight.network/api/v4/graphql/ws',
-  },
-  relayURL: new URL('wss://rpc.preprod.midnight.network'),
-  provingServerUrl: new URL('http://localhost:6300'),
-  costParameters: { additionalFeeOverhead: 300_000_000_000_000n, feeBlocksMargin: 5 },
-  txHistoryStorage: new InMemoryTransactionHistoryStorage(),
-  batchUpdates: { size: 500, timeout: 50, spacing: 0 },
-};
-
-const wallet: any = await (WalletFacade as any).init({
-  configuration: baseConfig,
-  shielded: (cfg: any) => ShieldedWallet(cfg).startWithSecretKeys(shieldedSecretKeys),
-  unshielded: (cfg: any) =>
-    UnshieldedWallet({ ...cfg, txHistoryStorage: new InMemoryTransactionHistoryStorage() })
-      .startWithPublicKey(PublicKey.fromKeyStore(unshieldedKeystore)),
-  dust: (cfg: any) =>
-    DustWallet(cfg).startWithSecretKey(dustSecretKey, ledger.LedgerParameters.initialParameters().dust),
-});
-
-await wallet.start(shieldedSecretKeys, dustSecretKey);
-```
-
-Required v3 fields:
-- `provingServerUrl`: The local proof server URL
-- `costParameters`: Fee overhead and block margin
-- `txHistoryStorage`: Unshielded transaction history storage
-- `batchUpdates`: Tuning for dust sync performance (`{ size: 500, timeout: 50, spacing: 0 }`)
-- `PublicKey.fromKeyStore()`: Wraps the unshielded keystore for the wallet
-- `LedgerParameters.initialParameters().dust`: Dust ledger parameters
-
-### CLI transfer: `transferTransaction` + `signRecipe`
-
-For CLI transfers, use `transferTransaction` followed by `signRecipe`:
-
-View the full [`test-v3-sync-and-transfer.ts`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/scripts/test-v3-sync-and-transfer.ts) file on GitHub.
+The CLI performs transactions without a browser wallet, which is essential for agents and other systems to act autonomously. While the browser flow delegates balancing and signing to the wallet extension via `balanceUnsealedTransaction`, the CLI flow holds the 24-word mnemonic and uses `transferTransaction` + `signRecipe`:
 
 ```typescript
 // scripts/test-v3-sync-and-transfer.ts
@@ -610,40 +545,7 @@ const finalized = await ctx.wallet.finalizeRecipe(signedRecipe);
 const txId = await ctx.wallet.submitTransaction(finalized);
 ```
 
-**Note:** The CLI uses `unshieldedToken().raw` for the token type in `transferTransaction`.
-
-### Dust sync handling
-
-First-time dust syncing can take some time (approximately 70 minutes in testing). A 2-hour timeout is used.
-
-```typescript
-// scripts/test-v3-sync-and-transfer.ts
-const syncedState = await Rx.firstValueFrom(
-  ctx.wallet.state().pipe(
-    Rx.throttleTime(5_000),
-    Rx.tap((s: any) => {
-      // ...log progress...
-    }),
-    Rx.filter((s: any) => s.isSynced === true),
-    Rx.timeout(120 * 60 * 1000), // 2 hours for first-time dust sync
-  )
-);
-```
-
-Most importantly, save state on `SIGINT`/`SIGTERM` so progress is not lost if the user interrupts.
-
-```typescript
-const saveBeforeExit = async () => {
-  console.log('\n[Test] Interrupted — saving partial state...');
-  await saveWalletState(ctx, '.wallet-state');
-  await ctx.wallet.stop();
-  process.exit(0);
-};
-process.on('SIGINT', saveBeforeExit);
-process.on('SIGTERM', saveBeforeExit);
-```
-
-### Run the CLI transfer script
+The `ctx` object is built from a 24-word mnemonic via `restoreWalletState()`; the full key derivation, `WalletFacade` initialisation, dust sync handling, and state persistence live in [`src/lib/transaction-cli.ts`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/src/lib/transaction-cli.ts) and [`scripts/test-v3-sync-and-transfer.ts`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/scripts/test-v3-sync-and-transfer.ts). Run the script with:
 
 ```bash
 MNEMONIC="word1 word2 ... word24" npx tsx scripts/test-v3-sync-and-transfer.ts

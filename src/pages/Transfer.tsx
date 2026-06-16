@@ -35,11 +35,8 @@ export function TransferPage() {
   useEffect(() => {
     if (isConnected) {
       loadWalletState();
-      if (addresses?.unshieldedAddress && !recipient) {
-        setRecipient(addresses.unshieldedAddress);
-      }
     }
-  }, [isConnected, addresses?.unshieldedAddress]);
+  }, [isConnected]);
 
   const handleTransfer = useCallback(async () => {
     if (!connectedApi) {
@@ -72,9 +69,9 @@ export function TransferPage() {
       );
 
       const intent = Intent.new(new Date(Date.now() + 30 * 60 * 1000));
-      (intent as any).fallibleUnshieldedOffer = unshieldedOffer;
+      intent.guaranteedUnshieldedOffer = unshieldedOffer;
 
-      const unsealedTx = Transaction.fromParts('preprod', undefined, undefined, intent as any);
+      const unsealedTx = Transaction.fromParts('preprod', undefined, undefined, intent);
 
       // Real pattern from docs: prove → balanceUnsealedTransaction
       // For transfers with no contract calls, prove() simply advances PreProof → Proof
@@ -221,30 +218,6 @@ export function TransferPage() {
         </div>
       </div>
 
-      {/* Comparison callout */}
-      <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-6 space-y-4">
-        <p className="text-[10px] uppercase tracking-[0.1em] text-white/20 font-medium">Browser vs CLI</p>
-        <div className="space-y-3">
-          <div className="flex gap-3">
-            <div className="w-6 h-6 rounded-full bg-white/[0.06] flex items-center justify-center shrink-0 text-[10px] text-white/40 font-medium">1</div>
-            <p className="text-[13px] text-white/40 leading-relaxed">
-              <span className="text-white/60 font-medium">Browser:</span> Wallet extension holds keys.
-              We build an unproven transaction with <code className="text-white/50 font-mono text-[11px] bg-white/[0.04] px-1 py-0.5 rounded">Intent</code> + <code className="text-white/50 font-mono text-[11px] bg-white/[0.04] px-1 py-0.5 rounded">UnshieldedOffer</code>,
-              then call <code className="text-white/50 font-mono text-[11px] bg-white/[0.04] px-1 py-0.5 rounded">balanceUnsealedTransaction</code> so the wallet balances, signs, and pays fees.
-              You never touch secret keys.
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <div className="w-6 h-6 rounded-full bg-white/[0.06] flex items-center justify-center shrink-0 text-[10px] text-white/40 font-medium">2</div>
-            <p className="text-[13px] text-white/40 leading-relaxed">
-              <span className="text-white/60 font-medium">CLI:</span> Script holds the 24-word mnemonic and derives keys directly.
-              We call <code className="text-white/50 font-mono text-[11px] bg-white/[0.04] px-1 py-0.5 rounded">balanceUnboundTransaction</code> → manually sign intents →
-              <code className="text-white/50 font-mono text-[11px] bg-white/[0.04] px-1 py-0.5 rounded">submitTransaction</code>.
-              The script acts as the wallet.
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
