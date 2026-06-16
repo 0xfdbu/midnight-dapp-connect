@@ -144,8 +144,26 @@ The CLI code files in `src/lib/transaction-cli.ts` and `scripts/test-v3-sync-and
 
 ---
 
+## 6. Style guide cleanup
+
+Part of the required feedback was to align the repo with the Tech Content Style Guide (`DApp` capitalization, British spelling).
+
+### `README.md`
+
+- Changed the project structure tree root from `Dapp-connect/` to `midnight-dapp-connect/` to follow the repo name and avoid the non-standard `Dapp` casing.
+
+### `tutorial.md`
+
+- Added H1 title using `DApp` capitalization: `# [Tutorial] DApp Connector API: Connecting a browser DApp to Midnight wallets`.
+- British spelling pass: `initialise/initialisation`, `serialise/serialised`.
+
+**Result:** No prose occurrences of `Dapp` or lowercase standalone `dapp` remain outside repo/package names and code identifiers.
+
+---
+
 ## Files changed
 
 - `src/pages/Transfer.tsx`
 - `tutorial.md`
+- `README.md`
 - `CHANGELOG.md` (this file)

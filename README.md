@@ -73,7 +73,7 @@ This restores wallet state from `.wallet-state/` (or syncs from scratch), waits 
 ## Project Structure
 
 ```
-Dapp-connect/
+midnight-dapp-connect/
 ├── src/
 │   ├── pages/
 │   │   ├── Home.tsx          # Wallet dashboard
