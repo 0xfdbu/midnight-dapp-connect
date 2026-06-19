@@ -154,7 +154,7 @@ Part of the required feedback was to align the repo with the Tech Content Style 
 
 ### `tutorial.md`
 
-- Added H1 title using `DApp` capitalization: `# [Tutorial] DApp Connector API: Connecting a browser DApp to Midnight wallets`.
+- Added H1 title using `DApp` capitalization: `# DApp Connector API: Connecting a browser DApp to Midnight wallets`.
 - British spelling pass: `initialise/initialisation`, `serialise/serialised`.
 
 **Result:** No prose occurrences of `Dapp` or lowercase standalone `dapp` remain outside repo/package names and code identifiers.

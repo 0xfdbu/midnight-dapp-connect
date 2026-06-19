@@ -1,4 +1,4 @@
-# [Tutorial] DApp Connector API: Connecting a browser DApp to Midnight wallets
+# DApp Connector API: Connecting a browser DApp to Midnight wallets
 
 📁 **Full Source Code:** [midnight-dapp-connect](https://github.com/0xfdbu/midnight-dapp-connect)
 
