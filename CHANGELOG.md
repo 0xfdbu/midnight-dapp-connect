@@ -165,11 +165,12 @@ Part of the required feedback was to align the repo with the Tech Content Style 
 
 The `## Prerequisites` section originally contained a long package list, making the opening feel like a dump. It has been restructured to match the cleaner layout used in other standalone tutorials:
 
+- Added `## Summary` heading above the existing overview paragraph.
 - Added `## Project setup` with clone/install steps and a finished project structure tree.
 - Kept `## Prerequisites` short (Node.js, wallet, faucet tokens).
 - Moved all package details into a new `## Dependencies` section with a purpose column.
 
-**Result:** The tutorial now starts with a clear clone-and-follow path, separate prerequisites, and a readable dependencies table.
+**Result:** The tutorial now starts with a clear summary, clone-and-follow path, separate prerequisites, and a readable dependencies table.
 
 ---
 
