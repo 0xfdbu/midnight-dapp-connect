@@ -2,33 +2,71 @@
 
 📁 **Full Source Code:** [midnight-dapp-connect](https://github.com/0xfdbu/midnight-dapp-connect)
 
-This guide walks through the complete lifecycle of connecting web apps to the Midnight blockchain. You learn how to detect injected wallets in the browser, make a connection, monitor state changes, and submit transactions through both the browser extension flow and the CLI. You also learn the difference between them.
-
 **Target audience:** Developers
 
----
+This guide walks through the complete lifecycle of connecting web apps to the Midnight blockchain. You learn how to detect injected wallets in the browser, make a connection, monitor state changes, and submit transactions through both the browser extension flow and the CLI. You also learn the difference between them.
+
+## Project setup
+
+Start with the standalone repository:
+
+```bash
+git clone https://github.com/0xfdbu/midnight-dapp-connect.git
+cd midnight-dapp-connect
+npm install
+```
+
+The finished project structure looks like this:
+
+```text
+midnight-dapp-connect/
+├── scripts/
+│   ├── test-subscription.ts          # Wallet-state subscription test
+│   └── test-v3-sync-and-transfer.ts  # CLI transfer test
+├── src/
+│   ├── components/                   # React components
+│   ├── hooks/                        # Wallet connection and state hooks
+│   ├── lib/                          # CLI transaction helpers
+│   └── pages/                        # React pages (Home, Transfer)
+├── package.json
+└── tutorial.md                       # This guide
+```
+
+Run the frontend with `npm run dev`.
 
 ## Prerequisites
 
 - Node.js installed (v20+)
 - A Midnight wallet (for example, 1AM or Lace)
 - Some Preprod [faucet](https://faucet.preprod.midnight.network/) NIGHT tokens
-- A [`package.json`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/package.json) with the needed packages:
-  - `@midnight-ntwrk/dapp-connector-api`
-  - `@midnight-ntwrk/ledger-v8`
-  - `@midnight-ntwrk/midnight-js-utils`
-  - `@midnight-ntwrk/midnight-js-fetch-zk-config-provider`
-  - `@midnight-ntwrk/midnight-js-network-id`
-  - `@midnight-ntwrk/wallet-sdk-address-format`
-  - `@midnight-ntwrk/wallet-sdk-facade`
-  - `@midnight-ntwrk/wallet-sdk-shielded`
-  - `@midnight-ntwrk/wallet-sdk-unshielded-wallet`
-  - `@midnight-ntwrk/wallet-sdk-dust-wallet`
-  - `@midnight-ntwrk/wallet-sdk-hd`
-  - `@scure/bip39`
-  - `react`, `react-dom`, `react-router-dom`
-  - `zustand`, `rxjs`, `semver`, `ws`
-  - `typescript`, `vite`
+
+## Dependencies
+
+The project builds on the Midnight.js SDK and related libraries. These packages handle the heavy lifting:
+
+| Package | Purpose |
+|---|---|
+| `@midnight-ntwrk/dapp-connector-api` | Wallet connector API |
+| `@midnight-ntwrk/ledger-v8` | Transaction serialization |
+| `@midnight-ntwrk/midnight-js-utils` | Shared utilities |
+| `@midnight-ntwrk/midnight-js-fetch-zk-config-provider` | ZK config fetching |
+| `@midnight-ntwrk/midnight-js-network-id` | Network identification helpers |
+| `@midnight-ntwrk/wallet-sdk-address-format` | Address formatting |
+| `@midnight-ntwrk/wallet-sdk-facade` | Wallet facade SDK |
+| `@midnight-ntwrk/wallet-sdk-shielded` | Shielded wallet SDK |
+| `@midnight-ntwrk/wallet-sdk-unshielded-wallet` | Unshielded wallet SDK |
+| `@midnight-ntwrk/wallet-sdk-dust-wallet` | Dust wallet SDK |
+| `@midnight-ntwrk/wallet-sdk-hd` | HD wallet key derivation |
+| `@scure/bip39` | BIP-39 mnemonic handling |
+| `react`, `react-dom`, `react-router-dom` | Frontend framework |
+| `zustand` | State management |
+| `rxjs` | Reactive extensions for subscriptions |
+| `semver` | Semantic version parsing |
+| `ws` | WebSocket client |
+| `typescript` | TypeScript compiler |
+| `vite` | Build tool |
+
+Run `npm install` to install them automatically. See [`package.json`](https://github.com/0xfdbu/midnight-dapp-connect/blob/main/package.json) for the full list.
 
 ---
 
