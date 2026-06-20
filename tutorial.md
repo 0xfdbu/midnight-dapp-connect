@@ -51,7 +51,7 @@ The project builds on the Midnight.js SDK and related libraries. These packages 
 | `@midnight-ntwrk/midnight-js-utils` | Shared utilities |
 | `@midnight-ntwrk/midnight-js-fetch-zk-config-provider` | ZK config fetching |
 | `@midnight-ntwrk/midnight-js-network-id` | Network identification helpers |
-| `@midnight-ntwrk/wallet-sdk-address-format` | Address formatting |
+| `@midnight-ntwrk/wallet-sdk-address-format` | Address encoding/decoding (Bech32) |
 | `@midnight-ntwrk/wallet-sdk-facade` | Wallet facade SDK |
 | `@midnight-ntwrk/wallet-sdk-shielded` | Shielded wallet SDK |
 | `@midnight-ntwrk/wallet-sdk-unshielded-wallet` | Unshielded wallet SDK |
